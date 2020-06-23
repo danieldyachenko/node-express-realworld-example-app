@@ -13,7 +13,10 @@ var UserSchema = new mongoose.Schema({
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   hash: String,
   salt: String
-}, {timestamps: true});
+}, {
+  timestamps: true,
+  usePushEach: true
+});
 
 UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
@@ -60,7 +63,11 @@ UserSchema.methods.toProfileJSONFor = function(user){
 
 UserSchema.methods.favorite = function(id){
   if(this.favorites.indexOf(id) === -1){
-    this.favorites.push(id);
+    if (!this.favorites.length) {
+      this.favorites = [id];
+    } else {
+      this.favorites.push(id);
+    }
   }
 
   return this.save();
@@ -79,7 +86,11 @@ UserSchema.methods.isFavorite = function(id){
 
 UserSchema.methods.follow = function(id){
   if(this.following.indexOf(id) === -1){
-    this.following.push(id);
+    if (!this.following.length) {
+      this.following = [id];
+    } else {
+      this.following.push(id);
+    }
   }
 
   return this.save();
